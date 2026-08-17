@@ -57,3 +57,6 @@ sentinel-ai/
 5. **Framework isolation:** agent orchestration will live behind application interfaces so business logic is not coupled throughout the API.
 6. **Async resources follow the application lifecycle:** FastAPI's lifespan creates one SQLAlchemy `AsyncEngine` for the process, readiness borrows connections from it, and shutdown disposes it. This avoids per-request pool creation and prevents leaked connections during reloads and tests.
 7. **Quality gates protect downstream agent work:** linting and type checks catch interface drift before runtime, tests preserve operational contracts, and production builds catch environment-only integration failures before later workflow and tool layers depend on the foundation.
+8. **Domain records are immutable contracts:** incident, telemetry, evidence, hypothesis, run, and audit models reject unknown fields and dangling fixture references before persistence is introduced.
+9. **Provenance travels with telemetry:** each log, metric, and deployment event carries its source locator and a timezone-aware observation timestamp; evidence cites telemetry IDs rather than copying untraceable values.
+10. **Golden data is reproducible:** a local seeded generator, fixed UTC timeline, and content-derived stable IDs produce the checked-in incident JSON without wall-clock or global-random dependencies.

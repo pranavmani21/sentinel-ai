@@ -2,7 +2,7 @@
 
 SentinelAI is an agentic incident investigation and response platform. It will investigate simulated production incidents using logs, metrics, deployment history, and runbooks, then produce evidence-backed hypotheses and request human approval before remediation.
 
-This repository currently contains the **Day 1 foundation**: a typed FastAPI service, Next.js dashboard shell, PostgreSQL with pgvector, Docker Compose, automated tests, linting, type checking, and CI.
+This repository currently contains the **Days 1-2 foundation**: a typed FastAPI service, Next.js dashboard shell, PostgreSQL with pgvector, Docker Compose, automated quality gates, and a deterministic incident domain dataset.
 
 ## Architecture
 
@@ -73,6 +73,16 @@ npm.cmd run build
 ## Configuration
 
 Configuration is read from environment variables. Copy `.env.example` for local defaults. Never commit a populated `.env` file or API keys.
+
+## Golden incident dataset
+
+The backend packages a fixed-seed checkout latency incident at `backend/src/sentinel_api/data/golden_incident.json`. Its incident, telemetry, evidence, hypothesis, run, and audit records are validated by Pydantic contracts. Every log, metric, and deployment item includes a typed source and timezone-aware observation timestamp.
+
+Regenerate it from `backend/` with:
+
+```powershell
+venv\Scripts\python -m sentinel_api.fixtures
+```
 
 ## Roadmap
 

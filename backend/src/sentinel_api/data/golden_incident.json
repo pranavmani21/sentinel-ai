@@ -1,0 +1,207 @@
+{
+  "schema_version": "1.0",
+  "seed": 20260818,
+  "incident": {
+    "id": "inc_82406896d2235dfa",
+    "title": "Checkout latency after checkout-api 2.4.0",
+    "summary": "Checkout requests are slow after a production deployment.",
+    "severity": "sev2",
+    "status": "investigating",
+    "started_at": "2026-08-18T09:00:00Z",
+    "detected_at": "2026-08-18T09:04:00Z",
+    "affected_services": [
+      "checkout-api",
+      "payments-api"
+    ]
+  },
+  "telemetry": [
+    {
+      "id": "tel_06017598770b8031",
+      "incident_id": "inc_82406896d2235dfa",
+      "source": {
+        "kind": "deployments",
+        "system": "deployment-api",
+        "locator": "deployments://production/checkout-api"
+      },
+      "observed_at": "2026-08-18T08:48:00Z",
+      "kind": "deployment",
+      "service": "checkout-api",
+      "version": "2.4.0",
+      "commit_sha": "4f19c2a",
+      "description": "Raised database connection concurrency for promotion lookups."
+    },
+    {
+      "id": "tel_0d1c7226d1ee26ab",
+      "incident_id": "inc_82406896d2235dfa",
+      "source": {
+        "kind": "metrics",
+        "system": "prometheus",
+        "locator": "prometheus://platform/checkout-api"
+      },
+      "observed_at": "2026-08-18T08:58:00Z",
+      "kind": "metric",
+      "name": "http.server.duration.p95",
+      "value": 183.34,
+      "unit": "ms",
+      "labels": {
+        "service": "checkout-api",
+        "route": "POST /checkout"
+      }
+    },
+    {
+      "id": "tel_cbace7cce7d58f06",
+      "incident_id": "inc_82406896d2235dfa",
+      "source": {
+        "kind": "metrics",
+        "system": "prometheus",
+        "locator": "prometheus://platform/checkout-api"
+      },
+      "observed_at": "2026-08-18T09:02:00Z",
+      "kind": "metric",
+      "name": "http.server.duration.p95",
+      "value": 1845.67,
+      "unit": "ms",
+      "labels": {
+        "service": "checkout-api",
+        "route": "POST /checkout"
+      }
+    },
+    {
+      "id": "tel_1e7fba383df986b8",
+      "incident_id": "inc_82406896d2235dfa",
+      "source": {
+        "kind": "logs",
+        "system": "loki",
+        "locator": "loki://production/checkout-api"
+      },
+      "observed_at": "2026-08-18T09:03:00Z",
+      "kind": "log",
+      "service": "checkout-api",
+      "level": "warning",
+      "message": "Database connection acquisition exceeded the latency budget.",
+      "attributes": {
+        "pool_wait_ms": "885.95",
+        "request_id": "req-325703"
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "id": "evd_6912f14417594209",
+      "incident_id": "inc_82406896d2235dfa",
+      "kind": "change",
+      "summary": "checkout-api 2.4.0 was deployed shortly before latency increased.",
+      "telemetry_ids": [
+        "tel_06017598770b8031"
+      ],
+      "created_at": "2026-08-18T09:05:00Z"
+    },
+    {
+      "id": "evd_9ef5a97548dd27f9",
+      "incident_id": "inc_82406896d2235dfa",
+      "kind": "symptom",
+      "summary": "Checkout p95 latency increased by roughly an order of magnitude.",
+      "telemetry_ids": [
+        "tel_0d1c7226d1ee26ab",
+        "tel_cbace7cce7d58f06"
+      ],
+      "created_at": "2026-08-18T09:05:15Z"
+    },
+    {
+      "id": "evd_8809a92f0005bf38",
+      "incident_id": "inc_82406896d2235dfa",
+      "kind": "correlation",
+      "summary": "Connection acquisition delays coincide with elevated request latency.",
+      "telemetry_ids": [
+        "tel_1e7fba383df986b8",
+        "tel_cbace7cce7d58f06"
+      ],
+      "created_at": "2026-08-18T09:05:30Z"
+    }
+  ],
+  "hypotheses": [
+    {
+      "id": "hyp_10c165f8910594a6",
+      "incident_id": "inc_82406896d2235dfa",
+      "statement": "checkout-api 2.4.0 increased database concurrency, causing connection-pool contention and elevated checkout latency.",
+      "status": "supported",
+      "confidence": 0.93,
+      "evidence_ids": [
+        "evd_6912f14417594209",
+        "evd_9ef5a97548dd27f9",
+        "evd_8809a92f0005bf38"
+      ],
+      "created_at": "2026-08-18T09:06:00Z",
+      "updated_at": "2026-08-18T09:07:00Z"
+    }
+  ],
+  "run": {
+    "id": "run_3e5cefad9d4302c6",
+    "incident_id": "inc_82406896d2235dfa",
+    "status": "completed",
+    "started_at": "2026-08-18T09:04:00Z",
+    "completed_at": "2026-08-18T09:09:00Z",
+    "evidence_ids": [
+      "evd_6912f14417594209",
+      "evd_9ef5a97548dd27f9",
+      "evd_8809a92f0005bf38"
+    ],
+    "hypothesis_ids": [
+      "hyp_10c165f8910594a6"
+    ]
+  },
+  "audit": [
+    {
+      "id": "aud_b8fd3d63f6a1f30f",
+      "incident_id": "inc_82406896d2235dfa",
+      "run_id": "run_3e5cefad9d4302c6",
+      "action": "run_started",
+      "actor": "sentinel-agent",
+      "occurred_at": "2026-08-18T09:04:00Z",
+      "target_type": "run",
+      "target_id": "run_3e5cefad9d4302c6",
+      "details": {
+        "seed": "20260818"
+      }
+    },
+    {
+      "id": "aud_48a786749302b9ed",
+      "incident_id": "inc_82406896d2235dfa",
+      "run_id": "run_3e5cefad9d4302c6",
+      "action": "evidence_recorded",
+      "actor": "sentinel-agent",
+      "occurred_at": "2026-08-18T09:05:30Z",
+      "target_type": "evidence",
+      "target_id": "evd_8809a92f0005bf38",
+      "details": {
+        "evidence_count": "3"
+      }
+    },
+    {
+      "id": "aud_5bfc0693e1153a4c",
+      "incident_id": "inc_82406896d2235dfa",
+      "run_id": "run_3e5cefad9d4302c6",
+      "action": "hypothesis_recorded",
+      "actor": "sentinel-agent",
+      "occurred_at": "2026-08-18T09:06:00Z",
+      "target_type": "hypothesis",
+      "target_id": "hyp_10c165f8910594a6",
+      "details": {
+        "confidence": "0.93"
+      }
+    },
+    {
+      "id": "aud_c3531840dc463a90",
+      "incident_id": "inc_82406896d2235dfa",
+      "run_id": "run_3e5cefad9d4302c6",
+      "action": "run_completed",
+      "actor": "sentinel-agent",
+      "occurred_at": "2026-08-18T09:09:00Z",
+      "target_type": "run",
+      "target_id": "run_3e5cefad9d4302c6",
+      "details": {
+        "result": "supported_hypothesis"
+      }
+    }
+  ]
+}
